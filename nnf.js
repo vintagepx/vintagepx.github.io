@@ -7,7 +7,7 @@
   };
   
   const NiconicoPlayer = function(videoId, targetElem, width, height, playerId) {
-    var origin = 'http://embed.nicovideo.jp';
+    var origin = 'https://embed.nicovideo.jp';
     var playerUrl = `${origin}/watch/${videoId}?jsapi=1&playerId=${playerId}`;
   
     var iframe = document.createElement('iframe');
@@ -129,7 +129,7 @@
     }
   
     window.addEventListener('message', function(event){
-      if(event.origin === 'http://embed.nicovideo.jp'){
+      if(event.origin === 'https://embed.nicovideo.jp'){
         factory._handleEvent(event.data);
       }
     })
