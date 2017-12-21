@@ -45,7 +45,6 @@ const server = http.createServer(function(request, response) {
       }
     }
     else {
-      response. 'Access-Control-Allow-Origin'
       response.writeHead(200, { 'Content-Type': contentType });
       response.end(content, 'utf-8');
     }

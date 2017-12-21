@@ -6,18 +6,33 @@
     ended: 4
   };
   
-  const NiconicoPlayer = function(videoId, targetElem, width, height, playerId) {
+  const NiconicoPlayer = function(options) {
+    var videoId = options.videoId;
+    var target = options.target;
+    var iframe = options.iframe;
+    var width = options.width;
+    var height = options.height;
+    var playerId = options.playerId;
+
     var origin = 'https://embed.nicovideo.jp';
     var playerUrl = `${origin}/watch/${videoId}?jsapi=1&playerId=${playerId}`;
-  
-    var iframe = document.createElement('iframe');
-    iframe.setAttribute('src', playerUrl);
-    iframe.setAttribute('frameborder', 0);
-    iframe.setAttribute('scrolling', 0);
-    iframe.setAttribute('width', width || 640);
-    iframe.setAttribute('height', height || 480);
-    
-    targetElem.appendChild(iframe);
+
+    if(iframe){
+      var url = new URL(iframe.src);
+      url.searchParams.set('jsapi', '1');
+      url.searchParams.set('playerId', playerId.toString());
+      iframe.src = url.toString();
+      playerUrl = url.toString();
+    }else{
+      iframe = document.createElement('iframe');
+      iframe.setAttribute('src', playerUrl);
+      iframe.setAttribute('frameborder', 0);
+      iframe.setAttribute('scrolling', 0);
+      iframe.setAttribute('width', width || 640);
+      iframe.setAttribute('height', height || 480);
+      
+      target.appendChild(iframe);
+    }
   
     return {
       url: playerUrl,
@@ -50,6 +65,7 @@
       },
       Seek: function(time){
         this._postMessage('seek', { time: time });
+        return this;
       },
       ChangeVolume: function(volume){
         this._postMessage('volumeChange', { volume: volume });
@@ -106,14 +122,29 @@
   
   const NiconicoFactory = function(){
     const factory = {
-      _nextPlayerId: 1,
+      _nextPlayerId: 0,
       players: [],
       playerStatus: playerStatus,
   
-      Create: function(videoId, targetElem, width, height){
-        var player = NiconicoPlayer(videoId, targetElem, width, height, this._nextPlayerId++)
+      Create: function(videoId, target, width, height){
+        var player = NiconicoPlayer({
+          videoId: videoId,
+          target: target,
+          width: width,
+          height: height,
+          playerId: this._nextPlayerId++
+        });
         this.players.push(player);
   
+        return player;
+      },
+      Assign: function(iframe){
+        var player = NiconicoPlayer({
+          iframe: iframe,
+          playerId: this._nextPlayerId++
+        });
+        this.players.push(player);
+
         return player;
       },
   

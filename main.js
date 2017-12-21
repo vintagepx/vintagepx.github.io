@@ -16,9 +16,14 @@ const onEnd = function(){
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-  const createPlayerAndControls = function(videoId){
+  const createPlayerAndControls = function(params){
     const newPlayerId = NND._nextPlayerId;
-    const player = NND.Create(videoId, document.getElementById(`player-${newPlayerId}`), 320, 240);
+    var player = null;
+    if(params.videoId){
+      player = NND.Create(params.videoId, document.getElementById(`player-${newPlayerId}`), 320, 240);
+    }else{
+      player = NND.Assign(params.iframe);
+    }
     
     // Event listeners
     player.onReady = onReady.bind(player);
@@ -42,8 +47,8 @@ document.addEventListener("DOMContentLoaded", function() {
     return player;
   }
 
-  const player1 = createPlayerAndControls('sm9205429');
-  const player2 = createPlayerAndControls('sm21319705');
+  const player1 = createPlayerAndControls({ videoId: 'sm9205429' });
+  const player2 = createPlayerAndControls({ iframe: document.querySelector('#player-1 > iframe') });
 
   window.player = player1;
 });
